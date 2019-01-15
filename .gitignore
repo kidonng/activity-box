@@ -1,0 +1,10 @@
+# General
+.idea
+.vscode
+.DS_Store
+
+# Project-Specific
+node_modules
+npm-debug.log*
+yarn-debug.log*
+/dist
