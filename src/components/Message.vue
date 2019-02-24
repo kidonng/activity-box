@@ -6,7 +6,7 @@
     :right="true"
     :timeout="2000"
   >
-    <v-icon color="white">{{ message.type }}</v-icon>
+    <v-icon class="mr-3" color="white">{{ message.type }}</v-icon>
     {{ message.text }}
     <v-btn icon @click="message = false">
       <v-icon>close</v-icon>

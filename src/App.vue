@@ -31,7 +31,7 @@
         if (typeof to.meta.login !== 'undefined' && this.$store.state.login !== to.meta.login) this.$router.push({ name: 'index' })
       })
 
-      this.$store.commit('message', { type: 'info', text: '开发中，部分功能暂不可用' })
+      this.$store.commit('message', { type: 'info', text: '应用开发中，随时可能有改动！' })
     }
   }
 </script>
