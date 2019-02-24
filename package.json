@@ -7,19 +7,19 @@
   },
   "dependencies": {
     "jssha": "^2.3.1",
-    "ky": "^0.6.0",
-    "vue": "^2.5.22",
+    "ky": "^0.9.0",
+    "vue": "^2.6.7",
     "vue-router": "^3.0.2",
-    "vuetify": "^1.4.1",
-    "vuex": "^3.0.1",
+    "vuetify": "^1.5.2",
+    "vuex": "^3.1.0",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "@vue/cli-service": "^3.3.0",
+    "@vue/cli-service": "^3.4.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "vue-cli-plugin-vuetify": "^0.4.6",
-    "vue-template-compiler": "^2.5.22",
-    "vuetify-loader": "^1.1.1"
+    "vue-template-compiler": "^2.6.7",
+    "vuetify-loader": "^1.2.1"
   }
 }
