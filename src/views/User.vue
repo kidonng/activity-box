@@ -1,256 +1,266 @@
 <template>
-  <v-layout v-if="$store.state.edit" column>
-    <v-flex align-self-center>
-      <v-avatar class="mb-2" size="125">
-        <v-img v-if="user.avatar" :src="user.avatar" alt="头像"></v-img>
-        <v-tooltip v-else bottom>
-          <v-icon slot="activator" size="125" @click="$refs.upload.click()">add_photo_alternate</v-icon>
-          <input
-            type="file"
-            accept="image/*"
-            ref="upload"
-            @input="$store.dispatch('upload', { image: $refs.upload.files[0], callback: (url) => { user.avatar = url }})"
-            hidden>
-          <span>上传头像</span>
-        </v-tooltip>
-      </v-avatar>
-    </v-flex>
+  <v-layout column>
+    <v-form v-if="edit" v-model="valid" ref="info">
+      <div class="text-xs-center">
+        <v-hover v-if="user.avatar">
+          <v-avatar slot-scope="{ hover }" class="avatar" size="128">
+            <v-img :src="user.avatar" alt="头像">
+              <v-layout
+                slot="placeholder"
+                fill-height
+                align-center
+                justify-center
+              >
+                <v-progress-circular indeterminate></v-progress-circular>
+              </v-layout>
+              <v-fade-transition>
+                <v-layout
+                  v-if="hover"
+                  class="hover"
+                  fill-height
+                  align-center
+                  justify-center
+                >
+                  <v-menu attach=".avatar" min-width="144" offset-x>
+                    <v-btn slot="activator" large icon>
+                      <v-icon color="white">menu</v-icon>
+                    </v-btn>
+                    <v-list>
+                      <v-list-tile @click="$refs.upload.click()">
+                        <v-icon class="mr-3">edit</v-icon>
+                        修改
+                      </v-list-tile>
+                      <v-list-tile @click="user.avatar = null">
+                        <v-icon class="mr-3">close</v-icon>
+                        恢复默认
+                      </v-list-tile>
+                    </v-list>
+                  </v-menu>
+                </v-layout>
+              </v-fade-transition>
+            </v-img>
+          </v-avatar>
+        </v-hover>
+        <v-btn
+          v-else
+          @click="$refs.upload.click()"
+          :loading="uploading"
+          class="upload-avatar title"
+          icon
+        >
+          <v-flex>
+            <v-icon class="mb-3">add</v-icon>
+            <div>上传头像</div>
+          </v-flex>
+        </v-btn>
+        <input
+          @input="upload"
+          ref="upload"
+          type="file"
+          accept="image/*"
+          hidden
+        />
+      </div>
 
-    <v-form v-model="user.valid" ref="user">
       <v-text-field
-        v-model="user.username"
-        prepend-icon="account_circle"
+        :value="currentUsername"
         label="用户名"
         disabled
       ></v-text-field>
-      <v-text-field
-        v-model.trim="user.nickname"
-        :rules="[v => !!v || '']"
-        prepend-icon="alternate_email"
-        label="昵称"
-        maxlength="20"
-        autofocus
-      ></v-text-field>
       <v-textarea
         v-model.trim="user.bio"
-        prepend-icon="public"
         label="简介"
-        rows="3"
-        no-resize
+        hint="可选"
+        rows="4"
         maxlength="100"
       ></v-textarea>
       <v-text-field
-        v-model="user.realname"
-        prepend-icon="person"
+        :value="user.realname"
         label="真实姓名"
-        :disabled="!!$store.state.user.realname"
+        disabled
       ></v-text-field>
       <v-text-field
-        v-model="user.groupname"
-        prepend-icon="group"
-        label="所属团体"
-        :disabled="!!$store.state.user.groupname"
+        v-model.trim="user.groupname"
+        label="所属组织"
+        hint="可选"
+        maxlength="20"
       ></v-text-field>
+      <v-divider></v-divider>
       <v-text-field
-        v-model.trim="password.old"
-        :rules="[v => !password.new || !!v || '请输入旧密码']"
-        :type="password.visible ? 'text' : 'password'"
-        prepend-icon="lock"
-        :append-icon="password.visible ? 'visibility_off' : 'visibility'"
-        @click:append="password.visible = !password.visible"
+        v-model.trim="passwords.old"
+        :rules="[v => !passwords.new || !!v || '请输入旧密码']"
+        :type="passwords.visible ? 'text' : 'password'"
+        :append-icon="passwords.visible ? 'visibility' : 'visibility_off'"
+        @click:append="passwords.visible = !passwords.visible"
         label="旧密码"
-        hint="留空表示不修改"
-        persistent-hint
-        browser-autocomplete="current-password"
-        @input="$refs.user.validate()"
+        @input="$refs.info.validate()"
       ></v-text-field>
       <v-text-field
-        v-model.trim="password.new"
+        v-model.trim="passwords.new"
         :rules="[
-        v => !v || v.length >= 8 || '至少 8 位',
-        v => !password.old || !!v || '请输入新密码',
-        v => !v || v !== password.old || '新旧密码相同']"
-        :type="password.visible ? 'text' : 'password'"
-        prepend-icon=" "
+          v => !passwords.old || !!v || '请输入新密码',
+          v => !v || v.length >= 8 || '至少 8 位',
+          v => !v || v !== passwords.old || '新旧密码相同'
+        ]"
+        :type="passwords.visible ? 'text' : 'password'"
         label="新密码"
-        browser-autocomplete="new-password"
-        @input="$refs.user.validate()"
+        @input="$refs.info.validate()"
       ></v-text-field>
       <v-text-field
-        v-model.trim="password.confirm"
-        :rules="[v => !(password.new || v) || v === password.new || '密码不一致']"
-        :type="password.visible ? 'text' : 'password'"
-        prepend-icon=" "
+        :rules="[v => !passwords.old || v === passwords.new || '密码不一致']"
+        :type="passwords.visible ? 'text' : 'password'"
         label="确认新密码"
-        browser-autocomplete="new-password"
-        @input="$refs.user.validate()"
+        @input="$refs.info.validate()"
       ></v-text-field>
+
+      <v-dialog v-model="dialog.show">
+        <v-card>
+          <v-card-title class="headline">
+            注销
+            <v-spacer></v-spacer>
+            <v-btn @click="dialog.show = false" icon>
+              <v-icon>close</v-icon>
+            </v-btn>
+          </v-card-title>
+          <v-card-text>
+            注销将删除该账号产生的所有数据且无法恢复。
+            <v-checkbox
+              v-model="dialog.confirmed"
+              label="我已了解注销的后果"
+              color="primary"
+            ></v-checkbox>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="deactivate" :disabled="!dialog.confirmed" flat
+              >注销</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <v-layout>
-        <v-dialog v-model="dialog.show">
-          <v-btn slot="activator" flat :disabled="!password.old">删除账号</v-btn>
-          <v-card>
-            <v-card-title class="headline">
-              删除账号
-              <v-spacer></v-spacer>
-              <v-btn icon @click="dialog.show = false">
-                <v-icon>close</v-icon>
-              </v-btn>
-            </v-card-title>
-
-            <v-card-text>
-              <div class="subheading">
-                <strong>删除账号后，您将失去所有与您相关的信息！</strong>为确保账号安全，请完成以下验证：
-              </div>
-              <v-form v-model="dialog.valid" ref="dialog">
-                <v-text-field
-                  v-model.trim="dialog.username"
-                  :rules="[v => v === user.username || '']"
-                  prepend-icon="account_circle"
-                  browser-autocomplete="username"
-                  autofocus
-                >
-                  <template slot="label">请输入<strong>用户名</strong></template>
-                </v-text-field>
-                <v-text-field v-model.trim="dialog.confirm" :rules="[v => v === '删除我的账号' || '']" prepend-icon="delete">
-                  <template slot="label">请输入<strong>删除我的账号</strong></template>
-                </v-text-field>
-              </v-form>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" @click="deactivate" :disabled="!dialog.valid">确认</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
+        <v-btn @click="dialog.show = true" flat>注销</v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="update" :disabled="!user.valid">保存</v-btn>
+        <v-btn @click="cancel" depressed>取消</v-btn>
+        <v-btn @click="update" :disabled="!valid" color="primary" depressed
+          >保存</v-btn
+        >
       </v-layout>
     </v-form>
-  </v-layout>
 
-  <v-layout v-else column align-center>
-    <v-avatar :class="{ 'mb-2': user.avatar }" size="125">
-      <v-img v-if="user.avatar" :src="user.avatar" alt="头像"></v-img>
-      <v-icon v-else size="125">face</v-icon>
-    </v-avatar>
-
-    <div class="headline font-weight-medium" :class="{ 'my-1': user.avatar, 'mb-1': !user.avatar }">{{ user.nickname }}</div>
-
-    <v-tooltip v-if="user.verified" class="mb-2" bottom>
-      <v-chip slot="activator" color="teal" text-color="white">
-        <v-avatar>
-          <v-icon>verified_user</v-icon>
-        </v-avatar>
-        {{ user.groupname }}
-      </v-chip>
-      <span>已验证</span>
-    </v-tooltip>
-    <v-chip v-else-if="user.groupname" class="mb-2">{{ user.groupname }}</v-chip>
-
-    <v-expansion-panel>
-      <v-expansion-panel-content ripple>
-        <div slot="header">简介</div>
-        <v-card>
-          <v-card-text>{{ user.bio || '这个人很懒，什么都没写' }}</v-card-text>
-        </v-card>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
+    <div v-else class="text-xs-center">
+      <v-avatar size="128">
+        <v-img v-if="user.avatar" :src="user.avatar" alt="头像"></v-img>
+        <v-icon v-else size="128">face</v-icon>
+      </v-avatar>
+      <div class="title mt-3 mb-2">
+        {{ routeUsername }}
+      </div>
+      <div>
+        <v-btn @click="edit = true">编辑</v-btn>
+      </div>
+    </div>
   </v-layout>
 </template>
 
 <script>
-  export default {
-    data: () => ({
-      user: {
-        valid: true,
-        nickname: null,
-        avatar: null
-      },
-      password: {
-        old: null,
-        new: null,
-        confirm: null,
-        visible: false
-      },
-      dialog: {
-        show: false,
-        valid: false,
-        username: null,
-        confirm: null
-      }
-    }),
-    created () {
-      (async () => {
-        const res = await this.$ajax.get(this.$store.state.api.user, {
-          searchParams: { name: this.$route.params.name }
-        }).json()
+export default {
+  data: () => ({
+    edit: false,
+    valid: true,
+    uploading: false,
+    user: {
+      avatar: null
+    },
+    passwords: {
+      old: null,
+      new: null,
+      visible: false
+    },
+    dialog: {
+      show: false,
+      confirmed: false
+    }
+  }),
+  computed: {
+    currentUsername: () => localStorage.username,
+    routeUsername() {
+      return this.$route.params.username
+    }
+  },
+  created() {
+    this.$store.commit('title', this.routeUsername)
+    ;(async () => {
+      const res = await this.api(`user/${this.routeUsername}`, {
+        headers: { Authorization: localStorage.token }
+      }).json()
 
-        if (res.success) {
-          if (this.$route.name === 'user') this.$store.commit('title', res.nickname)
-          Object.assign(this.user, res)
-        } else this.$store.commit('message', { type: 'error', text: res.message })
+      if (res.msg === 'OK') Object.assign(this.user, res)
+      else this.$store.commit('message', { type: 'error', text: res.msg })
+    })()
+  },
+  methods: {
+    upload() {
+      this.uploading = true
+      this.user.avatar = null
+      this.$store.dispatch('upload', {
+        photo: this.$refs.upload.files[0],
+        callback: url => {
+          this.user.avatar = url
+          this.uploading = false
+          this.$refs.upload.value = null
+        }
+      })
+    },
+    cancel() {
+      Object.assign(this.user, this.$store.state.user)
+      this.edit = false
+    },
+    update() {
+      ;(async () => {
+        const res = await this.api
+          .put(`user/${this.currentUsername}`, {
+            headers: { Authorization: localStorage.token },
+            json: Object.assign(
+              {
+                oldPassword: this.passwords.old,
+                newPassword: this.passwords.new
+              },
+              this.user
+            )
+          })
+          .json()
+
+        if (res.msg === 'OK') {
+          this.$store.commit('message', { type: 'done', text: '修改成功' })
+          this.$store.commit('user', this.user)
+          if (res.token) localStorage.token = res.token
+          this.edit = false
+        } else this.$store.commit('message', { type: 'error', text: res.msg })
       })()
     },
-    watch: {
-      '$store.state.edit' (v) {
-        Object.assign(this.user, this.$store.state.user)
-        if (!v) {
-          this.password.old = this.password.new = this.password.confirm = null
-          this.password.visible = false
-        }
-        this.$store.commit('title', v ? '编辑个人信息' : this.user.nickname)
-      },
-      'dialog.show' () { this.$refs.dialog.reset() }
-    },
-    beforeRouteLeave (to, from, next) {
-      this.$store.commit('edit', false)
-      next()
-    },
-    methods: {
-      update () {
-        const update = async () => {
-          const res = await this.$ajax.put(this.$store.state.api.user, {
-            headers: { Authorization: localStorage.getItem('token') },
-            json: this.user
-          }).json()
+    deactivate() {
+      ;(async () => {
+        const res = await this.api
+          .delete(`user/${this.currentUsername}`, {
+            headers: { Authorization: localStorage.token }
+          })
+          .json()
 
-          if (res.success) {
-            this.$store.commit('edit', false)
-            this.$store.commit('user', this.user)
-            if (res.token) localStorage.token = res.token
-            this.$store.commit('message', { type: 'done', text: '修改成功' })
-          } else this.$store.commit('message', { type: 'error', text: res.message })
-        }
-
-        if (this.password.new) this.$store.dispatch('auth', {
-          username: this.user.username,
-          password: this.password.old,
-          callback: () => {
-            Object.assign(this.user, { password: this.$hash(this.password.new) })
-            update()
-          }})
-        else update()
-      },
-      deactivate () {
-        this.$store.dispatch('auth', {
-          username: this.user.username,
-          password: this.password.old,
-          callback: async () => {
-            const res = await this.$ajax.delete(this.$store.state.api.user, {
-              headers: { Authorization: localStorage.token },
-              searchParams: { name: this.user.username }
-            }).json()
-
-            if (res.success) {
-              this.$store.dispatch('logout')
-              this.$router.push({ name: 'index' })
-              this.$store.commit('message', { type: 'done', text: '删除账号成功' })
-            } else this.$store.commit('message', { type: 'error', text: res.message })
-          }
-        })
-      }
+        if (res.msg === 'OK') {
+          this.$store.commit('message', { type: 'done', text: '注销成功' })
+          this.$router.push('/logout')
+        } else this.$store.commit('message', { type: 'error', text: res.msg })
+      })()
     }
   }
+}
 </script>
+
+<style lang="stylus">
+.upload-avatar
+  color rgba(0 0 0 0.54) !important
+  height 128px
+  width @height
+</style>

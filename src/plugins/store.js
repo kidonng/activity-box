@@ -1,77 +1,77 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import ky from 'ky'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const api = ky.extend({
+  prefixUrl: 'http://rap2api.taobao.org/app/mock/163080'
+})
+const store = new Vuex.Store({
   state: {
     login: false,
-    user: {},
-    edit: false,
+    user: {
+      avatar: null
+    },
     title: null,
     menu: false,
-    message: { show: false },
-    api: {
-      activity: 'https://easy-mock.com/mock/5c31d16c67fe190a45936aa3/activity',
-      user: 'https://easy-mock.com/mock/5c31d16c67fe190a45936aa3/user',
-      image: 'https://sm.ms/api/upload'
-    }
+    message: { show: false }
   },
   mutations: {
-    login (state, v) { state.login = v },
-    user ({ user }, v) { Object.assign(user, v) },
-    edit (state, v) { state.edit = v },
-    title (state, v) { state.title = document.title = v },
-    menu (state, show) { state.menu = show },
-    message ({ message }, { show = true, type, text }) {
+    login: (state, v) => (state.login = v),
+    user: ({ user }, v) => Object.assign(user, v),
+    title: (state, v) => (state.title = v),
+    menu: (state, show) => (state.menu = show),
+    message({ message }, { show = true, type, text }) {
       message.show = show
       message.type = type
       message.text = text
     }
   },
   actions: {
-    auth ({ state, commit }, { username, password, callback }) {
-      (async () => {
-        const res = await this._vm.$ajax.post(state.api.user, {
-          json: {
+    login({ commit, dispatch }, { username, password, callback }) {
+      ;(async () => {
+        const res = await api('user', {
+          searchParams: {
             username,
-            password: this._vm.$hash(password)
+            password
           }
         }).json()
 
-        res.success
-          ? callback(res.token)
-          : commit('message', { type: 'error', text: res.message })
-      })()
-    },
-    info ({ state, commit }, token) {
-      (async () => {
-        commit('login', true)
-        localStorage.token = token
-
-        const res = await this._vm.$ajax.get(state.api.user, { headers: { Authorization: token }}).json()
-
-        res.success
-          ? commit('user', res)
-          : commit('message', { type: 'error', text: res.message })
-      })()
-    },
-    logout ({ commit }) {
-      delete localStorage.token
-      commit('login', false)
-    },
-    upload ({ state, commit }, { image, callback }) {
-      (async () => {
-        const data = new FormData()
-        data.append('smfile', image, image.name)
-
-        const res = await this._vm.$ajax.post(state.api.image, { body: data }).json()
-
-        if (res.code === 'success') {
-          callback(res.data.url)
-          commit('message', { type: 'done', text: '上传成功' })
+        if (res.msg === 'OK') {
+          localStorage.username = username
+          localStorage.token = res.token
+          dispatch('info')
+          callback()
         } else commit('message', { type: 'error', text: res.msg })
+      })()
+    },
+    info({ commit }) {
+      commit('login', true)
+      ;(async () => {
+        const res = await api(`user/${localStorage.username}`, {
+          headers: { Authorization: localStorage.token }
+        }).json()
+
+        res.msg === 'OK'
+          ? commit('user', res)
+          : commit('message', { type: 'error', text: res.msg })
+      })()
+    },
+    upload({ commit }, { photo, callback }) {
+      ;(async () => {
+        const data = new FormData()
+        data.append('smfile', photo, photo.name)
+
+        const res = await ky
+          .post('https://sm.ms/api/upload', { body: data })
+          .json()
+
+        if (res.code === 'success') callback(res.data.url)
+        else commit('message', { type: 'error', text: res.msg })
       })()
     }
   }
 })
+
+export { api, store }
