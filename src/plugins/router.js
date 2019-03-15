@@ -1,64 +1,63 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import { store } from './store'
 import Index from '../views/Index'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
-      name: 'index',
       path: '/',
-      component: Index,
-      meta: { title: '盒事' }
+      component: Index
     },
     {
-      name: 'search',
-      path: '/search',
-      component: () => import(/* webpackChunkName: 'search' */ '../views/Search'),
-      meta: { title: '搜索' }
-    },
-    {
-      name: 'activity',
-      path: '/activity/:id',
-      component: () => import(/* webpackChunkName: 'activity' */ '../views/Activity'),
-      meta: { title: '活动' }
-    },
-    {
-      name: 'favorite',
-      path: '/favorite',
-      component: () => import(/* webpackChunkName: 'favorite' */ '../views/Favorite'),
-      meta: { title: '收藏', login: true }
-    },
-    {
-      name: 'manage',
-      path: '/manage',
-      component: () => import(/* webpackChunkName: 'manage' */ '../views/Manage'),
-      meta: { title: '管理', login: true }
-    },
-    {
-      name: 'login',
       path: '/login',
       component: () => import(/* webpackChunkName: 'login' */ '../views/Login'),
-      meta: { title: '登录', login: false }
+      meta: {
+        title: '登录',
+        noLoggedIn: true
+      }
     },
     {
-      name: 'register',
       path: '/register',
-      component: () => import(/* webpackChunkName: 'register' */ '../views/Register'),
-      meta: { title: '注册', login: false }
+      component: () =>
+        import(/* webpackChunkName: 'register' */ '../views/Register'),
+      meta: {
+        title: '注册',
+        noLoggedIn: true
+      }
     },
     {
-      name: 'user',
-      path: '/user/:name',
-      component: () => import(/* webpackChunkName: 'user' */ '../views/User'),
-      meta: { title: '用户' }
+      path: '/user/:username',
+      component: () => import(/* webpackChunkName: 'user' */ '../views/User')
     },
+    { path: '/personal' },
+    { path: '/logout' },
     {
       path: '*',
-      redirect: { name: 'index' }
+      redirect: '/'
     }
-  ]
+  ],
+  scrollBehavior: () => ({
+    x: 0,
+    y: 0
+  })
 })
+router.afterEach(to => {
+  if (to.meta.noLoggedIn && store.state.login) router.push('/')
+  else if (to.path === '/personal')
+    router.push(`/user/${localStorage.username}`)
+  else if (to.path === '/logout') {
+    store.commit('login', false)
+    delete localStorage.username
+    delete localStorage.token
+    router.push('/')
+  }
+  if (to.meta.title) store.commit('title', to.meta.title)
+  if (store.state.menu) store.commit('menu', false)
+})
+
+export default router

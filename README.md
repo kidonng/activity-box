@@ -1,9 +1,9 @@
-# NCUHome 2018 Hack Week
+# NCUHome 2018 Hack Week (Discontinued)
 
-This is the front-end part of an activity bulletin board application.
+[👑 Winning archive](../../tree/archive) · [API (Mock)](http://rap2api.taobao.org/test/test.plugin.jquery.html?id=163080)
 
-[👑 Winning archive](../../tree/archive)
+Front-end of an activity bulletin board.
 
-- Install dependencies `yarn`
-- Serve `yarn run serve`
-- Build `yarn run build`
+- Setup `yarn`
+- Run `yarn serve`
+- Build `yarn build`

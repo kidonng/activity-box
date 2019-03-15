@@ -1,9 +1,8 @@
 <template>
   <v-app>
     <Toolbar></Toolbar>
-    <Message></Message>
     <Menu></Menu>
-
+    <Message></Message>
     <v-content>
       <v-container>
         <router-view></router-view>
@@ -13,30 +12,18 @@
 </template>
 
 <script>
-  import Toolbar from './components/Toolbar'
-  import Message from './components/Message'
-  import Menu from './components/Menu'
+import Toolbar from './components/App/Toolbar'
+import Menu from './components/App/Menu'
+import Message from './components/App/Message'
 
-  export default {
-    components: {
-      Toolbar,
-      Menu,
-      Message
-    },
-    created () {
-      if (localStorage.token) this.$store.dispatch('info', localStorage.token)
-
-      this.$router.afterEach(to => {
-        this.$store.commit('title', to.meta.title)
-        if (typeof to.meta.login !== 'undefined' && this.$store.state.login !== to.meta.login) this.$router.push({ name: 'index' })
-      })
-
-      this.$store.commit('message', { type: 'info', text: '应用开发中，随时可能有改动！' })
-    }
+export default {
+  components: {
+    Toolbar,
+    Menu,
+    Message
+  },
+  created() {
+    if (localStorage.token) this.$store.dispatch('info')
   }
+}
 </script>
-
-<style lang="stylus">
-  .application
-    font-family Roboto, PingFang SC, Hiragino Sans GB, Noto Sans CJK SC, Source Han Sans SC, Source Han Sans CN, Microsoft YaHei, Wenquanyi Micro Hei, WenQuanYi Zen Hei, ST Heiti, SimHei, WenQuanYi Zen Hei Sharp, sans-serif;
-</style>
