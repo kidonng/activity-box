@@ -85,7 +85,6 @@
         hint="可选"
         maxlength="20"
       ></v-text-field>
-      <v-divider></v-divider>
       <v-text-field
         v-model.trim="passwords.old"
         :rules="[v => !passwords.new || !!v || '请输入旧密码']"

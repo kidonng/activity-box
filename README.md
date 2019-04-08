@@ -1,8 +1,9 @@
-# NCUHome 2018 Hack Week (Discontinued)
+# Activity Box
 
-[👑 Winning archive](../../tree/archive) · [API (Mock)](http://rap2api.taobao.org/test/test.plugin.jquery.html?id=163080)
+![Maintenance](https://img.shields.io/maintenance/no/2019.svg?style=for-the-badge)
+[![GitHub](https://img.shields.io/github/license/kidonng/box.svg?style=for-the-badge)](./LICENSE)
 
-Front-end of an activity bulletin board.
+An activity bulletin board. [NCUHome 2018 Hack Week Winner 👑](../../tree/archive).
 
 - Setup `yarn`
 - Run `yarn serve`
