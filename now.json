@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/rap2/(.*)",
+      "dest": "http://rap2api.taobao.org/$1",
+      "continue": true
+    }
+  ]
+}

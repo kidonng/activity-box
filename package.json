@@ -21,9 +21,6 @@
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.2.1"
   },
-  "vue": {
-    "publicPath": "/ncuhome-2018-hack-week/"
-  },
   "prettier": {
     "semi": false,
     "singleQuote": true

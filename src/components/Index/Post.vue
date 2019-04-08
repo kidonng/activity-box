@@ -194,9 +194,10 @@ export default {
     min() {
       const now = new Date()
       const month = (now.getMonth() + 1).toString()
+      const date = now.getDate().toString()
       return `${now.getFullYear()}-${
         month.length === 2 ? month : `0${month}`
-      }-${new Date().getDate()}`
+      }-${date.length === 2 ? date : `0${date}`}`
     }
   },
   watch: {
@@ -251,9 +252,9 @@ export default {
   display none
 
 .hover
-  background rgba(0 0 0 0.5)
+  background rgba(0 0 0 .5)
 
 .add-photo
-  color rgba(0 0 0 0.54) !important
+  color rgba(0 0 0 .54) !important
   height 54px !important
 </style>
