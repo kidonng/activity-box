@@ -1,4 +1,4 @@
-# NCUHome 2018 Hack Week (Discontinued)
+# [DEPRECATED] NCUHome 2018 Hack Week
 
 [👑 Winning archive](../../tree/archive) · [API (Mock)](http://rap2api.taobao.org/test/test.plugin.jquery.html?id=163080)
 
