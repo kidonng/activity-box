@@ -1,6 +1,6 @@
-# [DEPRECATED] NCUHome 2018 Hack Week
+# NCUHome 2018 Hack Week (Unfinished)
 
-[👑 Winning archive](../../tree/archive) · [API (Mock)](http://rap2api.taobao.org/test/test.plugin.jquery.html?id=163080)
+[👑 Winning archive](../../tree/archive)
 
 Front-end of an activity bulletin board.
 
