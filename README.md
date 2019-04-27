@@ -1,8 +1,6 @@
-# NCUHome 2018 Hack Week (Unfinished)
+# Box (Unfinished)
 
-[👑 Winning archive](../../tree/archive)
-
-Front-end of an activity bulletin board.
+An activity bulletin board. [NCUHome 2018 Hack Week Winner 👑](../../tree/archive).
 
 - Setup `yarn`
 - Run `yarn serve`
