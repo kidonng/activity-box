@@ -1,4 +1,6 @@
-# Box (Unfinished)
+# Box
+
+**DISCONTINUED**
 
 An activity bulletin board. [NCUHome 2018 Hack Week Winner 👑](../../tree/archive).
 
