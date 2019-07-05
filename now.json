@@ -3,8 +3,9 @@
   "builds": [{ "src": "package.json", "use": "@now/static-build" }],
   "routes": [
     { "src": "^/rap2/(.*)", "dest": "http://rap2api.taobao.org/$1" },
-    { "src": "^/js/(.*)", "dest": "/js/$1" },
-    { "src": "^/css/(.*)", "dest": "/css/$1" },
+    { "src": "^/js/(.*)", "headers": { "cache-control": "max-age=31536000, immutable" }, "dest": "/js/$1" },
+    { "src": "^/css/(.*)", "headers": { "cache-control": "max-age=31536000, immutable" }, "dest": "/css/$1" },
+    { "src": "^/img/(.*)", "headers": { "cache-control": "max-age=31536000, immutable" }, "dest": "/img/$1" },
     { "src": ".*", "dest": "/" }
   ]
 }
