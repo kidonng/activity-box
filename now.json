@@ -8,5 +8,5 @@
     { "src": "^/img/(.*)", "headers": { "cache-control": "max-age=31536000, immutable" }, "dest": "/img/$1" },
     { "src": ".*", "dest": "/" }
   ],
-  "regions": ["hkg1"]
+  "regions": ["hnd1"]
 }
