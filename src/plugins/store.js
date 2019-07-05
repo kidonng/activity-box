@@ -5,7 +5,7 @@ import ky from 'ky'
 Vue.use(Vuex)
 
 const api = ky.extend({
-  prefixUrl: 'http://rap2api.taobao.org/app/mock/163080'
+  prefixUrl: '/rap2/app/mock/163080'
 })
 const store = new Vuex.Store({
   state: {

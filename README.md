@@ -1,6 +1,6 @@
 # Box
 
-**DISCONTINUED**
+![Maintenance](https://img.shields.io/maintenance/no/2019.svg?style=for-the-badge)
 
 An activity bulletin board. [NCUHome 2018 Hack Week Winner 👑](../../tree/archive).
 
